@@ -8,6 +8,14 @@ local Systems = ReplicatedStorage:WaitForChild("Systems")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local UserInputService = game:GetService("UserInputService")
 
+-- Simuliere die Eingabe eines Tastendrucks
+local function simulateKeyPress(key)
+    local input = Instance.new("InputObject")
+    input.KeyCode = Enum.KeyCode[key]
+    UserInputService.InputBegan:Fire(input, false)
+    UserInputService.InputEnded:Fire(input, false)
+end
+
 -- GUI-Erstellung
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "DriveworldAutoGUI"
@@ -133,7 +141,14 @@ end
 local function getvehicle()
     for _, v in next, workspace.Cars:GetChildren() do
         if v:IsA("Model") and v:FindFirstChild("Owner") and v.Owner.Value == lp then
-            return v
+            if v:FindFirstChild("CurrentDriver") and v.CurrentDriver.Value == lp then
+                -- Ensure the vehicle has a PrimaryPart
+                if v.PrimaryPart then
+                    return v
+                else
+                    warn("Vehicle missing PrimaryPart!")
+                end
+            end
         end
     end
     return nil
@@ -207,11 +222,18 @@ task.spawn(function()
             -- Add necessary job handling logic based on your game's job system
             local completepos
             local CompletionRegion
-            local job = lp.PlayerGui.Score.Frame.Jobs
-            repeat task.wait()
-                if job.Visible == false then
-                    Systems:WaitForChild("Jobs"):WaitForChild("StartJob"):InvokeServer(workspace:WaitForChild("Jobs"):WaitForChild("FoodDelivery"), workspace:WaitForChild("Jobs"):WaitForChild("FoodDelivery"):WaitForChild("StartPoints"):WaitForChild("ClubManta"))
-                end
+            local jobComplete = lp.PlayerGui:FindFirstChild("JobComplete")
+if jobComplete then
+    if jobComplete.Enabled then
+        Systems:WaitForChild("Jobs"):WaitForChild("CashBankedEarnings"):FireServer()
+        for _, v in next, getconnections(jobComplete.Window.Content.Buttons.CloseButton.MouseButton1Click) do
+            v:Fire()
+        end
+    end
+else
+    warn("JobComplete UI not found!")
+end
+
             until job.Visible == true or Driveworld["autodeliveryfood"] == false
             repeat task.wait(.1)
                 if workspace:FindFirstChild("CompletionRegion") then
