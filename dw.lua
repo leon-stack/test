@@ -140,6 +140,7 @@ end
 task.spawn(function()
     while task.wait(1) do
         if Driveworld["autodeliveryfood"] then
+            -- Auto Food Delivery Logic
             if not isInVehicle() then
                 if not getVehicle() then
                     spawnVehicle()
@@ -179,10 +180,10 @@ task.spawn(function()
     end
 end)
 
--- Auto Delivery Logic (Material Delivery)
 task.spawn(function()
     while task.wait(1) do
         if Driveworld["autodeliverymaterial"] and material then
+            -- Auto Material Delivery Logic
             local cargo
             local completePos
             local completionRegion
