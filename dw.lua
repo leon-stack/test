@@ -1,5 +1,3 @@
-repeat task.wait() until game:IsLoaded()
-
 --// GUI-Erstellung
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 ScreenGui.Name = "DriveworldAutoGUI"
@@ -9,6 +7,8 @@ Frame.Size = UDim2.new(0, 250, 0, 200)
 Frame.Position = UDim2.new(0, 10, 0.5, -100)
 Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 Frame.BorderSizePixel = 0
+Frame.Active = true
+Frame.Draggable = true -- <-- Aktiviert das Draggen
 
 local UICorner = Instance.new("UICorner", Frame)
 UICorner.CornerRadius = UDim.new(0, 8)
@@ -27,6 +27,7 @@ local function createToggle(name, callback)
     toggle.Text = name .. ": OFF"
     toggle.Font = Enum.Font.SourceSans
     toggle.TextSize = 18
+    toggle.AutoButtonColor = false
     local active = false
     toggle.MouseButton1Click:Connect(function()
         active = not active
@@ -43,12 +44,14 @@ local function createDropdown(name, items, callback)
     dropdown.Text = name .. ": Select..."
     dropdown.Font = Enum.Font.SourceSans
     dropdown.TextSize = 18
+    dropdown.AutoButtonColor = false
 
     dropdown.MouseButton1Click:Connect(function()
-        local listStr = "Choose: "
+        local listStr = name .. " Options:\n"
         for i, item in pairs(items) do
-            listStr = listStr .. "\n[" .. i .. "] " .. item
+            listStr = listStr .. "[" .. i .. "] " .. item .. "\n"
         end
+        print(listStr)
         local chosen = tonumber(string.match(tostring(rconsoleinput and rconsoleinput() or "1"), "%d+"))
         if items[chosen] then
             dropdown.Text = name .. ": " .. items[chosen]
@@ -63,7 +66,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local Systems = ReplicatedStorage:WaitForChild("Systems")
 local Driveworld = {}
-
 local material
 
 --// GUI Elemente
