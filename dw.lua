@@ -1,3 +1,4 @@
+repeat task.wait() until game:IsLoaded()
 --// GUI-Erstellung
 local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 ScreenGui.Name = "DriveworldAutoGUI"
