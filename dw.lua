@@ -1,3 +1,4 @@
+repeat task.wait() until game:IsLoaded()
 -- Initializing
 local Driveworld = {}
 local material = nil
